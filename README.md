@@ -1,2 +1,3 @@
-# go-ga
+# Go-GA
+
 Golang Genetic Algorithm
