@@ -2,9 +2,9 @@
 
 Golang Genetic Algorithm
 
-##Algorithm
+## Algorithm
 
-Pseudo-code
+*Pseudo-code*
 ```
    initialize population
    find fitness of population
