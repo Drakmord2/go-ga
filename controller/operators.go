@@ -16,7 +16,7 @@ func mutation() {
 	return
 }
 
-func selection() model.Population {
-	fmt.Println("- Selection")
-	return model.Population{}
+func selection(population []model.Chromosome) []model.Chromosome {
+	fmt.Println("- Selection\n ")
+	return population
 }
