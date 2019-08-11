@@ -17,11 +17,11 @@ func parentSelection(population *[]model.Chromosome) []int {
 		rand.Read(contestants)
 
 		best := 0
-		prev := 1000.
+		prev := 9999.
 		for j := 0; j < len(contestants); j++ {
 			if (*population)[j].GetFitness() < prev {
 				best = j
-				(*population)[j].SetFitness(1000.)
+				(*population)[j].SetFitness(9999.)
 			}
 		}
 

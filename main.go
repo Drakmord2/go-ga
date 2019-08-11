@@ -9,10 +9,14 @@ import (
 
 func main() {
 	config := util.Config{
-		MaxIteration:  100,
-		FitnessGoal:   0.,
-		Population:    20,
-		Parameters:    []string{"b7", "b6", "b5", "b4", "b3", "b2", "b1", "b0"},
+		MaxIteration: 500,
+		FitnessGoal:  0.,
+		Population:   50,
+		Parameters: []string{
+			"b15", "b14", "b13", "b12", "b11",
+			"b10", "b9", "b8", "b7", "b6",
+			"b5", "b4", "b3", "b2", "b1", "b0",
+		},
 		CrossoverRate: 0.7,
 		MutationRate:  0.01,
 	}

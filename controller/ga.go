@@ -15,14 +15,14 @@ var Verbose = false
 
 // GeneticAlgorithm finds the best solution to the problem
 func GeneticAlgorithm(config util.Config) (model.Chromosome, int) {
+	var iterations int
 	solution := model.Chromosome{}
-	solution.SetFitness(1000.)
+	solution.SetFitness(9999.)
 
 	// Initialization
 	Population := initialPopulation(config.Population, config.Parameters)
 	heuristic(&Population)
 
-	var iterations int
 	for i := 0; i < config.MaxIteration; i++ {
 		log("\nIteration: %d\n", i+1)
 
@@ -65,7 +65,7 @@ func GeneticAlgorithm(config util.Config) (model.Chromosome, int) {
 // Picks best solution
 func pickBest(population *[]model.Chromosome, solution model.Chromosome) model.Chromosome {
 	localBest := model.Chromosome{}
-	localBest.SetFitness(1000.)
+	localBest.SetFitness(9999.)
 	for i := range *population {
 		if (*population)[i].GetFitness() < localBest.GetFitness() {
 			localBest = (*population)[i]
@@ -79,7 +79,7 @@ func pickBest(population *[]model.Chromosome, solution model.Chromosome) model.C
 	return solution
 }
 
-// Finds the value 180
+// Finds the value 27000
 func heuristic(population *[]model.Chromosome) {
 	for i := range *population {
 		var sum float64
@@ -87,7 +87,7 @@ func heuristic(population *[]model.Chromosome) {
 
 		for j := range genes {
 			allele := genes[j].GetAllele()
-			sum += math.Pow(2, float64(7-j)) * float64(allele)
+			sum += math.Pow(2, float64(15-j)) * float64(allele)
 		}
 
 		if sum == 0 {
@@ -95,7 +95,7 @@ func heuristic(population *[]model.Chromosome) {
 			continue
 		}
 
-		fitness := math.Abs(180. - sum)
+		fitness := math.Abs(27000. - sum)
 		(*population)[i].SetFitness(fitness)
 	}
 }
