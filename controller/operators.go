@@ -3,14 +3,13 @@ package controller
 import (
 	"fmt"
 	"math/rand"
+	"sort"
 	"time"
 
 	"github.com/Drakmord2/go-ga/model"
 )
 
 func parentSelection(population *[]model.Chromosome) []int {
-	fmt.Println("  - Parent Selection")
-
 	p1 := random(1, len(*population)-2)
 	p2 := random(1, len(*population)-2)
 
@@ -24,7 +23,6 @@ func parentSelection(population *[]model.Chromosome) []int {
 }
 
 func crossover(population *[]model.Chromosome, parents []int, pc float32) []model.Chromosome {
-	fmt.Println("  - Crossover")
 	rand.Seed(time.Now().UnixNano())
 	geneSize := len((*population)[parents[0]].GetGenes())
 
@@ -61,15 +59,14 @@ func crossover(population *[]model.Chromosome, parents []int, pc float32) []mode
 	return offspring
 }
 
+// Mutation (bit-flip) of genes
 func mutation(offspring *[]model.Chromosome, pm float32) {
-	fmt.Println("  - Mutation")
 	rand.Seed(time.Now().UnixNano())
 
 	for i := range *offspring {
 		genes := (*offspring)[i].GetGenes()
 		for j := range genes {
 			if rand.Float32() <= pm {
-				fmt.Println("    - Mutation occured!")
 				if genes[j].GetAllele() == 0 {
 					genes[j].SetAllele(1)
 					continue
@@ -82,9 +79,39 @@ func mutation(offspring *[]model.Chromosome, pm float32) {
 }
 
 func survivorSelection(population *[]model.Chromosome) {
-	fmt.Println("  - Survivor Selection")
+	var index int
+	populationSize := len(*population)
+	scores := make([]float64, populationSize)
+
+	for i := range *population {
+		scores[i] = (*population)[i].GetFitness()
+	}
+	sort.Float64s(scores)
+
+	for j := 0; j < 2; j++ {
+		for i := range *population {
+			fitness := (*population)[i].GetFitness()
+			notfit := scores[populationSize-1]
+
+			if j == 1 {
+				notfit = scores[populationSize-2]
+			}
+
+			if fitness == notfit {
+				index = i
+				break
+			}
+		}
+		*population = removeIndex(*population, index)
+	}
+	fmt.Println(" ")
 }
 
 func random(min int, max int) int {
 	return rand.Intn(max-min) + min
+}
+
+func removeIndex(s []model.Chromosome, i int) []model.Chromosome {
+	s[i] = s[0]
+	return s[1:]
 }

@@ -9,7 +9,7 @@ import (
 
 func main() {
 	config := util.Config{
-		MaxIteration:  5,
+		MaxIteration:  100,
 		FitnessGoal:   0.,
 		Population:    10,
 		Parameters:    []string{"b7", "b6", "b5", "b4", "b3", "b2", "b1", "b0"},
@@ -18,9 +18,9 @@ func main() {
 	}
 
 	fmt.Println("\n\t- Go-GA -")
-	fmt.Printf("\nConfiguration: %v\n\n", config)
+	fmt.Printf("\nConfiguration: %v\n", config)
 
-	solution := controller.GeneticAlgorithm(config)
+	solution, iterations := controller.GeneticAlgorithm(config)
 
-	fmt.Printf("\t- Results -\n\nSolution: %v\nFitness:  %f\n\n", solution.GetGenes(), solution.GetFitness())
+	fmt.Printf("\n\n\t- Results -\n\nSolution:   %v\nFitness:    %f\nIterations: %d\n\n", solution.GetGenes(), solution.GetFitness(), iterations)
 }

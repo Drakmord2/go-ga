@@ -10,20 +10,11 @@ import (
 	"github.com/Drakmord2/go-ga/util"
 )
 
-// GA()
-//    initialize population
-//    find fitness of population
-//    while (termination criteria is reached) do
-//       parent selection
-//       crossover with probability pc
-//       mutation with probability pm
-//       find fitness of population
-//       survivor selection
-//       find best
-//    return best
+// Verbose output for debugging
+var Verbose = false
 
 // GeneticAlgorithm finds the best solution to the problem
-func GeneticAlgorithm(config util.Config) model.Chromosome {
+func GeneticAlgorithm(config util.Config) (model.Chromosome, int) {
 	solution := model.Chromosome{}
 	solution.SetFitness(1000.)
 
@@ -31,32 +22,44 @@ func GeneticAlgorithm(config util.Config) model.Chromosome {
 	Population := initialPopulation(config.Population, config.Parameters)
 	heuristic(&Population)
 
+	var iterations int
 	for i := 0; i < config.MaxIteration; i++ {
-		fmt.Printf("Iteration: %d\n", i+1)
+		log("\nIteration: %d\n", i+1)
 
-		// Parent Selection
+		log("  - Parent Selection")
 		Parents := parentSelection(&Population)
-		// Crossover
+
+		log("  - Crossover")
 		Offspring := crossover(&Population, Parents, config.CrossoverRate)
-		// Mutation
+
+		log("  - Mutation")
 		mutation(&Offspring, config.MutationRate)
-		// Evaluation
+
+		log("  - New Population")
+		Population = append(Population, Offspring...)
+
+		log("  - Evaluation")
 		heuristic(&Population)
-		// Survivor Selection
+
+		log("  - Survivor Selection")
 		survivorSelection(&Population)
 
 		// Fittest solution
 		solution = pickBest(&Population, solution)
 		bestfit := solution.GetFitness()
-		fmt.Printf("Fitness: %f\n\n", bestfit)
+		fmt.Printf("Fitness: %f", bestfit)
 
 		if bestfit == config.FitnessGoal {
-			fmt.Printf(" - Goal reached! -\n\n")
+			iterations = i + 1
 			break
 		}
 	}
 
-	return solution
+	if iterations == 0 {
+		iterations = config.MaxIteration
+	}
+
+	return solution, iterations
 }
 
 // Picks best solution
@@ -99,7 +102,7 @@ func heuristic(population *[]model.Chromosome) {
 
 func initialPopulation(populationSize int, parameters []string) []model.Chromosome {
 	rand.Seed(time.Now().UnixNano())
-	population := make([]model.Chromosome, populationSize)
+	population := make([]model.Chromosome, populationSize, populationSize+4)
 
 	for j := 0; j < populationSize; j++ {
 		genes := make([]model.Gene, len(parameters))
@@ -118,4 +121,14 @@ func initialPopulation(populationSize int, parameters []string) []model.Chromoso
 	}
 
 	return population
+}
+
+func log(format string, text ...interface{}) {
+	if Verbose {
+		if text != nil {
+			fmt.Printf(format, text...)
+			return
+		}
+		fmt.Println(format)
+	}
 }
