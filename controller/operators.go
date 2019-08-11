@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"math/rand"
 	"sort"
 	"time"
@@ -9,19 +8,30 @@ import (
 	"github.com/Drakmord2/go-ga/model"
 )
 
+// Tournament Selection
 func parentSelection(population *[]model.Chromosome) []int {
-	p1 := random(1, len(*population)-2)
-	p2 := random(1, len(*population)-2)
+	parents := make([]int, 2)
 
-	for p1 == p2 {
-		p2 = random(1, len(*population)-2)
+	for i := 0; i < 2; i++ {
+		contestants := make([]byte, random(len(*population)/2, len(*population)-1))
+		rand.Read(contestants)
+
+		best := 0
+		prev := 1000.
+		for j := 0; j < len(contestants); j++ {
+			if (*population)[j].GetFitness() < prev {
+				best = j
+				(*population)[j].SetFitness(1000.)
+			}
+		}
+
+		parents[i] = best
 	}
-
-	parents := []int{p1, p2}
 
 	return parents
 }
 
+// Single-point crossover
 func crossover(population *[]model.Chromosome, parents []int, pc float32) []model.Chromosome {
 	rand.Seed(time.Now().UnixNano())
 	geneSize := len((*population)[parents[0]].GetGenes())
@@ -104,7 +114,6 @@ func survivorSelection(population *[]model.Chromosome) {
 		}
 		*population = removeIndex(*population, index)
 	}
-	fmt.Println(" ")
 }
 
 func random(min int, max int) int {

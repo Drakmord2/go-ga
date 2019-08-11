@@ -47,7 +47,7 @@ func GeneticAlgorithm(config util.Config) (model.Chromosome, int) {
 		// Fittest solution
 		solution = pickBest(&Population, solution)
 		bestfit := solution.GetFitness()
-		fmt.Printf("Fitness: %f", bestfit)
+		fmt.Printf("Fitness: %f\n", bestfit)
 
 		if bestfit == config.FitnessGoal {
 			iterations = i + 1
