@@ -8,19 +8,8 @@ type Gene struct {
 
 // Chromosome is a solution to the problem
 type Chromosome struct {
-	id      int
 	genes   []Gene
 	fitness float64
-}
-
-// GetID returns the id of the chromosome
-func (c Chromosome) GetID() int {
-	return c.id
-}
-
-// SetID sets the id of the chromosome
-func (c *Chromosome) SetID(id int) {
-	c.id = id
 }
 
 // GetGenes returns the genes of the chromosome

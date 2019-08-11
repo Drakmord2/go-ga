@@ -3,6 +3,7 @@ package util
 // Config stores the parameters of the Genetic Algorithm
 type Config struct {
 	MaxIteration  int
+	FitnessGoal   float64
 	Population    int
 	Parameters    []string
 	MutationRate  float32
