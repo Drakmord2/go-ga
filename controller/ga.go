@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"strconv"
 	"time"
 
 	"github.com/Drakmord2/go-ga/model"
@@ -14,14 +15,14 @@ import (
 var Verbose = false
 
 // GeneticAlgorithm finds the best solution to the problem
-func GeneticAlgorithm(config util.Config) (model.Chromosome, int) {
+func GeneticAlgorithm(config util.Config) (string, int) {
 	var iterations int
 	solution := model.Chromosome{}
 	solution.SetFitness(9999.)
 
 	// Initialization
 	Population := initialPopulation(config.Population, config.Parameters)
-	heuristic(&Population)
+	heuristic(&Population, config.Objective)
 
 	for i := 0; i < config.MaxIteration; i++ {
 		log("\nIteration: %d\n", i+1)
@@ -39,7 +40,7 @@ func GeneticAlgorithm(config util.Config) (model.Chromosome, int) {
 		Population = append(Population, Offspring...)
 
 		log("  - Evaluation")
-		heuristic(&Population)
+		heuristic(&Population, config.Objective)
 
 		log("  - Survivor Selection")
 		survivorSelection(&Population)
@@ -59,7 +60,7 @@ func GeneticAlgorithm(config util.Config) (model.Chromosome, int) {
 		iterations = config.MaxIteration
 	}
 
-	return solution, iterations
+	return solutionString(solution), iterations
 }
 
 // Picks best solution
@@ -67,35 +68,30 @@ func pickBest(population *[]model.Chromosome, solution model.Chromosome) model.C
 	localBest := model.Chromosome{}
 	localBest.SetFitness(9999.)
 	for i := range *population {
-		if (*population)[i].GetFitness() < localBest.GetFitness() {
+		if (*population)[i].GetFitness() <= localBest.GetFitness() {
 			localBest = (*population)[i]
 		}
 	}
 
-	if localBest.GetFitness() < solution.GetFitness() {
+	if localBest.GetFitness() <= solution.GetFitness() {
 		solution = localBest
 	}
 
 	return solution
 }
 
-// Finds the value 27000
-func heuristic(population *[]model.Chromosome) {
+// Fittest individuals are close to the objective value
+func heuristic(population *[]model.Chromosome, objectiveValue float64) {
 	for i := range *population {
-		var sum float64
 		genes := (*population)[i].GetGenes()
 
+		sum := 0.
 		for j := range genes {
 			allele := genes[j].GetAllele()
 			sum += math.Pow(2, float64(15-j)) * float64(allele)
 		}
 
-		if sum == 0 {
-			(*population)[i].SetFitness(1000.)
-			continue
-		}
-
-		fitness := math.Abs(27000. - sum)
+		fitness := math.Abs(objectiveValue - sum)
 		(*population)[i].SetFitness(fitness)
 	}
 }
@@ -121,6 +117,21 @@ func initialPopulation(populationSize int, parameters []string) []model.Chromoso
 	}
 
 	return population
+}
+
+func solutionString(solution model.Chromosome) string {
+	genes := solution.GetGenes()
+	geneString := ""
+	for i := 0; i < len(genes); i++ {
+		geneString += strconv.Itoa(genes[i].GetAllele())
+	}
+	result := "Solution: {\n    Genes:   "
+	result += geneString
+	result += "\n    Fitness: "
+	result += strconv.FormatFloat(solution.GetFitness(), 'f', 6, 64)
+	result += "\n}"
+
+	return result
 }
 
 func log(format string, text ...interface{}) {

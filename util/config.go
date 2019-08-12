@@ -4,6 +4,7 @@ package util
 type Config struct {
 	MaxIteration  int
 	FitnessGoal   float64
+	Objective	  float64
 	Population    int
 	Parameters    []string
 	MutationRate  float32
