@@ -20,9 +20,14 @@ func GeneticAlgorithm(config util.Config) (string, int) {
 	solution := model.Chromosome{}
 	solution.SetFitness(9999.)
 
-	// Initialization
+	log("Initializing Model")
 	Population := initialPopulation(config.Population, config.Parameters)
-	heuristic(&Population, config.Objective)
+
+	if config.Parallel {
+		parallelHeuristic(&Population, config.Objective)
+	} else {
+		heuristic(&Population, config.Objective)
+	}
 
 	for i := 0; i < config.MaxIteration; i++ {
 		log("\nIteration: %d\n", i+1)
@@ -40,7 +45,11 @@ func GeneticAlgorithm(config util.Config) (string, int) {
 		Population = append(Population, Offspring...)
 
 		log("  - Evaluation")
-		heuristic(&Population, config.Objective)
+		if config.Parallel {
+			parallelHeuristic(&Population, config.Objective)
+		} else {
+			heuristic(&Population, config.Objective)
+		}
 
 		log("  - Survivor Selection")
 		survivorSelection(&Population)
@@ -67,9 +76,10 @@ func GeneticAlgorithm(config util.Config) (string, int) {
 func pickBest(population *[]model.Chromosome, solution model.Chromosome) model.Chromosome {
 	localBest := model.Chromosome{}
 	localBest.SetFitness(9999.)
-	for i := range *population {
-		if (*population)[i].GetFitness() <= localBest.GetFitness() {
-			localBest = (*population)[i]
+
+	for _, chromosome := range *population {
+		if chromosome.GetFitness() <= localBest.GetFitness() {
+			localBest = chromosome
 		}
 	}
 
@@ -86,14 +96,53 @@ func heuristic(population *[]model.Chromosome, objectiveValue float64) {
 		genes := (*population)[i].GetGenes()
 
 		sum := 0.
-		for j := range genes {
-			allele := genes[j].GetAllele()
+		for j, gene := range genes {
+			allele := gene.GetAllele()
 			sum += math.Pow(2, float64(15-j)) * float64(allele)
 		}
 
 		fitness := math.Abs(objectiveValue - sum)
 		(*population)[i].SetFitness(fitness)
 	}
+}
+
+func parallelHeuristic(population *[]model.Chromosome, objectiveValue float64) {
+	populationSize := len(*population)
+	ch := make(chan int)
+
+	go func() {
+		slice1 := (*population)[:populationSize/4]
+		slice2 := (*population)[populationSize/4 : populationSize/2]
+		slice3 := (*population)[populationSize/2 : 3*populationSize/4]
+		slice4 := (*population)[3*populationSize/4:]
+
+		go parallelFitness(&slice1, objectiveValue, ch)
+		go parallelFitness(&slice2, objectiveValue, ch)
+		go parallelFitness(&slice3, objectiveValue, ch)
+		go parallelFitness(&slice4, objectiveValue, ch)
+	}()
+
+	<-ch
+	<-ch
+	<-ch
+	<-ch
+}
+
+func parallelFitness(population *[]model.Chromosome, objectiveValue float64, ch chan int) {
+	for i := range *population {
+		genes := (*population)[i].GetGenes()
+
+		sum := 0.
+		for j, gene := range genes {
+			allele := gene.GetAllele()
+			sum += math.Pow(2, float64(15-j)) * float64(allele)
+		}
+
+		fitness := math.Abs(objectiveValue - sum)
+		(*population)[i].SetFitness(fitness)
+	}
+
+	ch <- 0
 }
 
 func initialPopulation(populationSize int, parameters []string) []model.Chromosome {
