@@ -5,7 +5,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/Drakmord2/go-ga/model"
+	"../model"
 )
 
 // Tournament Selection

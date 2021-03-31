@@ -5,8 +5,8 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/Drakmord2/go-ga/controller"
-	"github.com/Drakmord2/go-ga/util"
+	"./controller"
+	"./util"
 )
 
 func main() {
@@ -14,8 +14,8 @@ func main() {
 	osthreads := runtime.GOMAXPROCS(virtualThreads)
 
 	config := util.Config{
-		MaxIteration: 100000,
-		Population:   100,
+		MaxIteration: 10000,
+		Population:   50,
 		Parameters: []string{
 			"b15", "b14", "b13", "b12", "b11",
 			"b10", "b9", "b8", "b7", "b6",
@@ -26,6 +26,7 @@ func main() {
 		CrossoverRate: 0.7,
 		MutationRate:  0.07,
 		Parallel:      true,
+		Verbose:       false,
 	}
 
 	fmt.Println("\n\t- Go-GA -")

@@ -1,20 +1,20 @@
 # Go-GA
 
-Golang Genetic Algorithm
+Golang Genetic Algorithm with multithread support
 
 ## Algorithm
 
 *Pseudo-code*
 ```
-   initialize population
-   find fitness of population
+   Initialize Population
+   Calculate Fitness of Population
    
-   while (termination criteria is reached) do
-      parent selection
-      crossover with probability pc
-      mutation with probability pm
-      decode and fitness calculation
-      survivor selection
-      find best
-   return best
+   while (termination criteria isnt met) do
+      Parent Selection
+      Crossover with probability Pc
+      Mutation with probability Pm
+      Calculate Fitness
+      Survivor Selection
+      Select Best
+   return Best
 ```

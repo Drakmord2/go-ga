@@ -7,15 +7,16 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Drakmord2/go-ga/model"
-	"github.com/Drakmord2/go-ga/util"
+	"../model"
+	"../util"
 )
 
 // Verbose output for debugging
-var Verbose = false
+var Verbose bool
 
 // GeneticAlgorithm finds the best solution to the problem
 func GeneticAlgorithm(config util.Config) (string, int) {
+	Verbose = config.Verbose
 	var iterations int
 	solution := model.Chromosome{}
 	solution.SetFitness(9999.)

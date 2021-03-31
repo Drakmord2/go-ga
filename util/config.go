@@ -10,4 +10,5 @@ type Config struct {
 	MutationRate  float32
 	CrossoverRate float32
 	Parallel      bool
+	Verbose       bool
 }
